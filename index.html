@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Share Flex</title>
+
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+<style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#000000,#1a1a1a);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+}
+button{
+  padding:18px 48px;
+  font-size:20px;
+  font-weight:700;
+  border:none;
+  border-radius:50px;
+  cursor:pointer;
+  background:linear-gradient(90deg,#ffd700,#ff8c00);
+  box-shadow:0 0 20px rgba(255,140,0,.8);
+}
+button:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+</style>
+</head>
+
+<body>
+
+<button id="shareBtn" onclick="shareFlex()">🔥 กดแชร์ให้เพื่อน</button>
+
+<script>
+async function shareFlex(){
+  const btn = document.getElementById("shareBtn");
+  btn.disabled = true;
+
+  try{
+
+    await liff.init({ liffId: "2009033240-Q5FHZMIw" });
+
+    if(!liff.isInClient()){
+      alert("กรุณาเปิดผ่านแอป LINE");
+      btn.disabled=false;
+      return;
+    }
+
+    const flexMessage = {
+      type: "flex",
+      altText: "🔥 สิทธิพิเศษสำหรับสมาชิกใหม่",
+      contents: {
+        type: "bubble",
+        size: "mega",
+        styles:{
+          body:{ backgroundColor:"#000000" },
+          footer:{ backgroundColor:"#000000" }
+        },
+        hero: {
+          type: "image",
+          url: "https://img2.pic.in.th/f4fb9afc-affc-4954-a149-795c26c01d0a.jpg",
+          size: "full",
+          aspectMode: "cover",
+          aspectRatio: "1:1"
+        },
+        body:{
+          type:"box",
+          layout:"vertical",
+          spacing:"md",
+          contents:[
+            {
+              type:"text",
+              text:"🔥 สิทธิพิเศษสำหรับสมาชิกใหม่",
+              weight:"bold",
+              size:"lg",
+              color:"#ffd700"
+            },
+            {
+              type:"text",
+              text:"กดเพิ่มเพื่อน รับข้อมูลและโปรโมชั่นก่อนใคร",
+              size:"sm",
+              wrap:true,
+              color:"#ffffff"
+            }
+          ]
+        },
+        footer:{
+          type:"box",
+          layout:"vertical",
+          spacing:"sm",
+          contents:[
+            {
+              type:"button",
+              style:"primary",
+              color:"#ff8c00",
+              action:{
+                type:"uri",
+                label:"รับสิทธิ์ทันที",
+                uri:"https://lin.ee/lDF0xaN"
+              }
+            }
+          ]
+        }
+      }
+    };
+
+    const result = await liff.shareTargetPicker([flexMessage]);
+
+    if(result){
+      liff.closeWindow();
+    }
+
+  }catch(err){
+    console.error(err);
+    alert("แชร์ไม่สำเร็จ");
+  }
+
+  btn.disabled=false;
+}
+</script>
+
+</body>
+</html>
