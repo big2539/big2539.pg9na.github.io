@@ -3,49 +3,133 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Share Flex</title>
+<title>แชร์รับเครดิต</title>
 
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
 <style>
-body{
+html,body{
   margin:0;
-  height:100vh;
+  padding:0;
+  height:100%;
+  background:#000;
+  overflow:hidden;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+  color:#fff;
+}
+
+/* 🔥 Fire Background */
+canvas{
+  position:fixed;
+  inset:0;
+  z-index:0;
+}
+
+.container{
+  position:relative;
+  z-index:2;
+  height:100%;
   display:flex;
+  flex-direction:column;
   justify-content:center;
   align-items:center;
-  background:linear-gradient(135deg,#000000,#1a1a1a);
-  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+  padding:20px;
+  text-align:center;
 }
+
+img{
+  width:90%;
+  max-width:420px;
+  border-radius:20px;
+  box-shadow:0 0 25px rgba(255,0,0,.6);
+  margin-bottom:20px;
+}
+
+h1{
+  font-size:26px;
+  margin:10px 0;
+  color:#ffd700;
+}
+
+p{
+  font-size:16px;
+  opacity:.9;
+  margin-bottom:25px;
+}
+
 button{
-  padding:18px 48px;
+  padding:18px 50px;
   font-size:20px;
   font-weight:700;
   border:none;
   border-radius:50px;
   cursor:pointer;
-  background:linear-gradient(90deg,#ffd700,#ff8c00);
-  box-shadow:0 0 20px rgba(255,140,0,.8);
+  background:linear-gradient(90deg,#ffcc00,#ff3300);
+  box-shadow:0 0 20px rgba(255,100,0,.8);
 }
+
 button:disabled{
   opacity:.6;
-  cursor:not-allowed;
 }
 </style>
 </head>
 
 <body>
 
-<button id="shareBtn" onclick="shareFlex()">🔥 กดแชร์ให้เพื่อน</button>
+<canvas id="fire"></canvas>
+
+<div class="container">
+
+  <img src="f4fb9afc-affc-4954-a149-795c26c01d0a.jpg">
+
+  <h1>🎁 รับเครดิต 50 บาท ฟรี!</h1>
+  <p>แชร์ให้เพื่อน แล้วรับสิทธิ์ทดลองเล่นทันที<br>ไม่ต้องฝากก่อน เล่นได้เลย!</p>
+
+  <button id="shareBtn" onclick="shareFlex()">
+    🔥 แชร์รับเครดิต
+  </button>
+
+</div>
 
 <script>
+/* 🔥 Fire Particle Effect */
+const c=document.getElementById("fire");
+const ctx=c.getContext("2d");
+let P=[];
+function rs(){c.width=innerWidth;c.height=innerHeight}
+addEventListener("resize",rs);rs();
+class F{
+  constructor(){
+    this.x=Math.random()*c.width;
+    this.y=c.height+Math.random()*80;
+    this.r=Math.random()*4+2;
+    this.v=Math.random()*2+1;
+    this.a=1;
+  }
+  u(){this.y-=this.v;this.a-=0.015}
+  d(){
+    ctx.beginPath();
+    ctx.fillStyle=`rgba(255,120,0,${this.a})`;
+    ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+    ctx.fill();
+  }
+}
+(function anim(){
+  ctx.clearRect(0,0,c.width,c.height);
+  if(P.length<150)P.push(new F());
+  P.forEach((p,i)=>{p.u();p.d();if(p.a<=0)P.splice(i,1)});
+  requestAnimationFrame(anim);
+})();
+
+/* 🔥 LIFF Share */
 async function shareFlex(){
-  const btn = document.getElementById("shareBtn");
-  btn.disabled = true;
+
+  const btn=document.getElementById("shareBtn");
+  btn.disabled=true;
 
   try{
 
-    await liff.init({ liffId: "2009033240-Q5FHZMIw" });
+    await liff.init({ liffId:"2009033240-Q5FHZMIw" });
 
     if(!liff.isInClient()){
       alert("กรุณาเปิดผ่านแอป LINE");
@@ -53,22 +137,18 @@ async function shareFlex(){
       return;
     }
 
-    const flexMessage = {
-      type: "flex",
-      altText: "🔥 สิทธิพิเศษสำหรับสมาชิกใหม่",
-      contents: {
-        type: "bubble",
-        size: "mega",
-        styles:{
-          body:{ backgroundColor:"#000000" },
-          footer:{ backgroundColor:"#000000" }
-        },
-        hero: {
-          type: "image",
-          url: "https://img2.pic.in.th/f4fb9afc-affc-4954-a149-795c26c01d0a.jpg",
-          size: "full",
-          aspectMode: "cover",
-          aspectRatio: "1:1"
+    const flex={
+      type:"flex",
+      altText:"🎁 รับเครดิต 50 บาท ฟรี!",
+      contents:{
+        type:"bubble",
+        size:"mega",
+        hero:{
+          type:"image",
+          url:"https://img2.pic.in.th/f4fb9afc-affc-4954-a149-795c26c01d0a.jpg",
+          size:"full",
+          aspectMode:"cover",
+          aspectRatio:"1:1"
         },
         body:{
           type:"box",
@@ -77,32 +157,30 @@ async function shareFlex(){
           contents:[
             {
               type:"text",
-              text:"🔥 สิทธิพิเศษสมาชิกใหม่",
+              text:"🎁 รับเครดิต 50 บาท ฟรี!",
               weight:"bold",
               size:"lg",
-              color:"#ffd700"
+              color:"#ff0000"
             },
             {
               type:"text",
-              text:"กดเพิ่มเพื่อน สมัครรับเครดิตฟรีก่อนใคร",
-              size:"sm",
+              text:"แชร์แล้วรับสิทธิ์ทดลองเล่นทันที ไม่ต้องฝากก่อน",
               wrap:true,
-              color:"#ffffff"
+              size:"sm"
             }
           ]
         },
         footer:{
           type:"box",
           layout:"vertical",
-          spacing:"sm",
           contents:[
             {
               type:"button",
               style:"primary",
-              color:"#ff8c00",
+              color:"#ff3300",
               action:{
                 type:"uri",
-                label:"รับสิทธิ์ทันที",
+                label:"รับสิทธิ์ตอนนี้",
                 uri:"https://lin.ee/lDF0xaN"
               }
             }
@@ -111,14 +189,18 @@ async function shareFlex(){
       }
     };
 
-    const result = await liff.shareTargetPicker([flexMessage]);
+    const result=await liff.shareTargetPicker([flex]);
 
     if(result){
-      liff.closeWindow();
+      setTimeout(()=>{
+        liff.openWindow({
+          url:"https://lin.ee/lDF0xaN",
+          external:true
+        });
+      },500);
     }
 
   }catch(err){
-    console.error(err);
     alert("แชร์ไม่สำเร็จ");
   }
 
